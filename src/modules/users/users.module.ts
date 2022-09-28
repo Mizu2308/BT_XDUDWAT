@@ -1,4 +1,4 @@
-import {Module, forwardRef} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {UserEntity} from './entities/users.entity';
 import {UserStaffController} from './controller/users.staff.controller';

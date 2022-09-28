@@ -152,54 +152,44 @@ export class UserService {
     const request = await this.requestService.getById(requestId);
     const newRequest = JSON.parse(request.body);
 
+    // Check username and email exists
+    const username = await this.repo.getUserByField('username', newRequest.username);
+    const email = await this.repo.getUserByField('email', newRequest.email);
+    if (username) {
+      throw new ConflictException('Username already exist');
+    }
+    if (email) {
+      throw new ConflictException('Email already exist');
+    }
+
+    let statusRequest = false;
+    // Check method of the request
     if (newRequest.id && request.method === RequestMethod.PUT) {
-      const username = await this.repo.getUserByField('username', newRequest.username);
-      const email = await this.repo.getUserByField('email', newRequest.email);
-      if (username) {
-        throw new ConflictException('Username already exist');
-      }
-      if (email) {
-        throw new ConflictException('Email already exist');
-      }
       // update Account
       const updateAccount = await this.updateAccount(request.creatorRole, newRequest);
 
       if (updateAccount) {
-        await this.requestService.updateRequestStatus(requestId, RequestStatus.APPROVED);
-        return true;
-      } else {
-        return false;
+        statusRequest = true;
       }
     } else if (newRequest.id && request.method === RequestMethod.DELETE) {
       // Delete Account
       const deleteAccount = this.deleteAccount(newRequest.id, request.creatorRole);
 
       if (deleteAccount) {
-        await this.requestService.updateRequestStatus(requestId, RequestStatus.APPROVED);
-        return true;
-      } else {
-        return false;
+        statusRequest = true;
       }
     } else {
-      const username = await this.repo.getUserByField('username', newRequest.username);
-      const email = await this.repo.getUserByField('email', newRequest.email);
-      if (username) {
-        throw new ConflictException('Username already exist');
-      }
-      if (email) {
-        throw new ConflictException('Email already exist');
-      }
-
       // Create a new Account
       const newAccount = await this.createAccount(newRequest, request.creatorRole);
 
       if (newAccount) {
-        // Update Request status = Approved after confirm request
-        await this.requestService.updateRequestStatus(requestId, RequestStatus.APPROVED);
-        return true;
-      } else {
-        return false;
+        statusRequest = true;
       }
+    }
+
+    if (statusRequest) {
+      await this.requestService.updateRequestStatus(requestId, RequestStatus.APPROVED);
+      return statusRequest;
     }
   }
 
