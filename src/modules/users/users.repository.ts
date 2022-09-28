@@ -53,7 +53,8 @@ export class UserRepository extends Repository<UserEntity> {
     user.password = password;
     user.confirmPassword = password;
     user.email = createDto.email;
-    user.name = createDto.name;
+    user.firstName = createDto.firstName;
+    user.lastName = createDto.lastName;
     user.identity = createDto.identity;
     user.description = createDto.description;
     user.surveyPrice = createDto.surveyPrice;
@@ -132,11 +133,10 @@ export class UserRepository extends Repository<UserEntity> {
    * @returns
    */
   async updateUser(user: UserEntity, updateDto: UpdateUserDto): Promise<UserEntity> {
-    user.username = updateDto.username;
-    user.email = updateDto.email;
     user.phone = updateDto.phone;
     user.address = updateDto.address;
-    user.name = updateDto.name;
+    user.firstName = updateDto.firstName;
+    user.lastName = updateDto.lastName;
     user.identity = updateDto.identity;
     user.description = updateDto.description;
     user.surveyPrice = updateDto.surveyPrice;

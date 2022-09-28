@@ -141,6 +141,32 @@ export class UserController {
     return this.userService.getAll(filterDto, req.user.role);
   }
 
+  @Get('/get_other/:id')
+  @ApiOperation({
+    operationId: 'get-user',
+    description: `
+      GET /
+    `,
+    summary: 'Get User',
+  })
+  @ApiOkResponse({description: 'OK'})
+  async getById(@Param() id: string): Promise<UserEntity> {
+    return this.userService.getById(id);
+  }
+
+  @Get('/me')
+  @ApiOperation({
+    operationId: 'get-user',
+    description: `
+      GET /
+    `,
+    summary: 'Get User',
+  })
+  @ApiOkResponse({description: 'OK'})
+  async getMe(@Req() req: {user: UserInfo}): Promise<UserEntity> {
+    return this.userService.getById(req.user.userId);
+  }
+
   @Put('/me')
   @ApiOperation({
     operationId: 'self-update',

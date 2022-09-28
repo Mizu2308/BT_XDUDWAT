@@ -83,7 +83,16 @@ export class UserBaseDto implements IUserBase {
   @Allow()
   @IsString()
   @IsOptional()
-  name?: string;
+  firstName?: string;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+  })
+  @Allow()
+  @IsString()
+  @IsOptional()
+  lastName?: string;
 
   @ApiProperty({
     type: String,

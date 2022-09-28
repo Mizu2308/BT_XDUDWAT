@@ -104,13 +104,13 @@ export class UserService {
       createDto.username
     }","email" : "${createDto.email}","phone" : "${createDto.phone || null}","address" : "${
       createDto.address || null
-    }","name" : "${createDto.name || null}","identity" : ${
-      createDto.identity || 0
-    },"description" : "${createDto.description || null}","surveyPrice" : ${
-      createDto.surveyPrice || 0
-    },"numberSurvey" : ${createDto.numberSurvey || 0},"questionSurvey" : ${
-      createDto.questionSurvey || 0
-    }}`;
+    }","firstName" : "${createDto.firstName || null}", "lastName" : "${
+      createDto.lastName || null
+    }","identity" : ${createDto.identity || 0},"description" : "${
+      createDto.description || null
+    }","surveyPrice" : ${createDto.surveyPrice || 0},"numberSurvey" : ${
+      createDto.numberSurvey || 0
+    },"questionSurvey" : ${createDto.questionSurvey || 0}}`;
 
     if (createDto.id) {
       const user = await this.getById(createDto.id);

@@ -23,8 +23,11 @@ export class UserEntity extends BaseEntity {
   @Column({name: 'username', nullable: false, unique: true})
   username: string;
 
-  @Column({name: 'name', nullable: true})
-  name: string;
+  @Column({name: 'first_name', nullable: true})
+  firstName: string;
+
+  @Column({name: 'last_name', nullable: true})
+  lastName: string;
 
   @Column({name: 'identity', nullable: true})
   identity: number;

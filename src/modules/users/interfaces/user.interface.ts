@@ -3,7 +3,8 @@ import {UserRoles, UserStatus} from '../users.enum';
 export interface IUserBase {
   id?: string;
   username: string;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   identity?: number;
   description?: string;
   surveyPrice?: number;
