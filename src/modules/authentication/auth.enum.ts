@@ -1,0 +1,4 @@
+export enum loginErrorEnum {
+  INVALID_MAIL_PASS = 'INVALID_MAIL_PASS',
+  USER_INACTIVE = 'USER_INACTIVE',
+}
