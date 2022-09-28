@@ -1,0 +1,23 @@
+//
+// Google font - Poppins
+//
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+//
+// Premium Font : HKGrotesk
+//
+
+@font-face {
+    font-family: "Helvetica";
+    src: url("~@/assets/fonts/Helvetica.ttf");
+    src: local('Helvetica'), url("~@/assets/fonts/Helvetica.ttf") format("woff");
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: "Yu Gothic";
+    src: url("~@/assets/fonts/yugothic.ttf");
+    src: local('yugothic'), url("~@/assets/fonts/yugothic.ttf") format("woff");
+    font-weight: 300;
+}
