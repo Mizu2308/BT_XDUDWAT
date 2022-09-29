@@ -26,6 +26,7 @@ import {UpdateResDto, UpdateUserDto} from '../dto/update.user.dto';
 import {RegisterUserDto} from '../dto/register.user.dto';
 import {CreateUserDto} from '../dto/create.user.dto';
 import {UuidReqDTO} from 'src/common/dto/uuid-req.dto';
+import {UserStatus} from '../users.enum';
 
 @Controller('/users')
 @ApiTags('users')
@@ -211,6 +212,24 @@ export class UserController {
     @Req() req: {user: UserInfo},
   ): Promise<UpdateResDto> {
     const success = await this.userService.updateAccount(id, req.user.role, updateDto);
+    return {success};
+  }
+
+  @Put('/status/:id')
+  @ApiOperation({
+    operationId: 'update-users',
+    description: `
+    Put /
+    
+    `,
+    summary: 'update Users',
+  })
+  @ApiOkResponse({description: 'OK'})
+  async updateUserStatus(
+    @Param(ValidationPipe) {id}: UserIdDTO,
+    @Req() req: {user: UserInfo},
+  ): Promise<UpdateResDto> {
+    const success = await this.userService.updateUserStatus(id, req.user.role);
     return {success};
   }
 

@@ -322,6 +322,42 @@ export class UserService {
     }
   }
 
+  async updateUserStatus(id: string, role: UserRoles): Promise<boolean> {
+    const user = await this.getById(id);
+
+    let success = false;
+
+    if (role === UserRoles.ADMIN && user.role === UserRoles.STAFF) {
+      if (user.status === UserStatus.ACTIVE) {
+        const updated = await this.repo.updateUserStatus(user, UserStatus.INACTIVE);
+        if (updated) {
+          success = true;
+        }
+      } else {
+        const updated = await this.repo.updateUserStatus(user, UserStatus.ACTIVE);
+        if (updated) {
+          success = true;
+        }
+      }
+    } else if (role === UserRoles.STAFF && user.role === UserRoles.USER) {
+      if (user.status === UserStatus.ACTIVE) {
+        const updated = await this.repo.updateUserStatus(user, UserStatus.INACTIVE);
+        if (updated) {
+          success = true;
+        }
+      } else {
+        const updated = await this.repo.updateUserStatus(user, UserStatus.ACTIVE);
+        if (updated) {
+          success = true;
+        }
+      }
+    } else {
+      throw new ForbiddenException('You have no rights to access !!!');
+    }
+
+    return success;
+  }
+
   async deleteAccount(id: string, role: UserRoles): Promise<boolean> {
     const user = await this.getById(id);
 
