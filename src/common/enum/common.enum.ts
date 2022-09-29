@@ -1,5 +1,5 @@
 export enum BasePagingEnum {
-  PAGE_SIZE = 15,
+  PAGE_SIZE = 10,
   PAGE = 1,
 }
 

@@ -5,8 +5,6 @@ import {IUpdateUser} from '../interfaces/update.user.interface';
 export class UpdateUserDto
   extends PickType(UserBaseDto, [
     'id',
-    'username',
-    'email',
     'phone',
     'address',
     'firstName',

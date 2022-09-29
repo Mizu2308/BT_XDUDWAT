@@ -70,7 +70,9 @@ export class RequestRepository extends Repository<RequestEntity> {
         .orWhere(`(${RequestEntityName}.creator_role = '${UserRoles.STAFF}')`)
         .andWhere(`${RequestEntityName}.status = '${RequestStatus.PENDING}' `);
     } else if (role === UserRoles.STAFF) {
-      query.orWhere(`(${RequestEntityName}.creator_role = '${UserRoles.USER}')`);
+      query
+        .orWhere(`(${RequestEntityName}.creator_role = '${UserRoles.USER}')`)
+        .andWhere(`${RequestEntityName}.status = '${RequestStatus.PENDING}' `);
     }
 
     query.orderBy(`${RequestEntityName}.createdAt`, 'DESC');

@@ -141,7 +141,7 @@ export class UserController {
     return this.userService.getAll(filterDto, req.user.role);
   }
 
-  @Get('/get_other/:id')
+  @Get('/other/:id')
   @ApiOperation({
     operationId: 'get-user',
     description: `
@@ -150,7 +150,7 @@ export class UserController {
     summary: 'Get User',
   })
   @ApiOkResponse({description: 'OK'})
-  async getById(@Param() id: string): Promise<UserEntity> {
+  async getById(@Param(ValidationPipe) {id}: UserIdDTO): Promise<UserEntity> {
     return this.userService.getById(id);
   }
 
@@ -190,7 +190,7 @@ export class UserController {
     return {success};
   }
 
-  @Put('')
+  @Put('/other/:id')
   @ApiOperation({
     operationId: 'update-users',
     description: `
@@ -206,10 +206,11 @@ export class UserController {
   })
   @ApiOkResponse({description: 'OK', type: UserBaseDto})
   async updateAccount(
+    @Param(ValidationPipe) {id}: UserIdDTO,
     @Body(ValidationPipe) updateDto: UpdateUserDto,
     @Req() req: {user: UserInfo},
   ): Promise<UpdateResDto> {
-    const success = await this.userService.updateAccount(req.user.role, updateDto);
+    const success = await this.userService.updateAccount(id, req.user.role, updateDto);
     return {success};
   }
 

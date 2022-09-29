@@ -99,19 +99,13 @@ export class UserService {
     if (email) {
       throw new ConflictException('Email already exist');
     }
-
-    const body = `{"id" : "${createDto.id || null}","username" : "${
-      createDto.username
-    }","email" : "${createDto.email}","phone" : "${createDto.phone || null}","address" : "${
-      createDto.address || null
-    }","firstName" : "${createDto.firstName || null}", "lastName" : "${
-      createDto.lastName || null
-    }","identity" : ${createDto.identity || 0},"description" : "${
-      createDto.description || null
-    }","surveyPrice" : ${createDto.surveyPrice || 0},"numberSurvey" : ${
-      createDto.numberSurvey || 0
-    },"questionSurvey" : ${createDto.questionSurvey || 0}}`;
-
+    // const body = `{"id" : "${createDto.id || null}","username" : "${createDto.username
+    //   }","email" : "${createDto.email}","phone" : "${createDto.phone || null}","address" : "${createDto.address || null
+    //   }","firstName" : "${createDto.firstName || null}", "lastName" : "${createDto.lastName || null
+    //   }","identity" : ${createDto.identity || 0},"description" : "${createDto.description || null
+    //   }","surveyPrice" : ${createDto.surveyPrice || 0},"numberSurvey" : ${createDto.numberSurvey || 0
+    //   },"questionSurvey" : ${createDto.questionSurvey || 0}}`;
+    const body = JSON.stringify(createDto);
     if (createDto.id) {
       const user = await this.getById(createDto.id);
       if (user) {
@@ -166,7 +160,11 @@ export class UserService {
     // Check method of the request
     if (newRequest.id && request.method === RequestMethod.PUT) {
       // update Account
-      const updateAccount = await this.updateAccount(request.creatorRole, newRequest);
+      const updateAccount = await this.updateAccount(
+        newRequest.id,
+        request.creatorRole,
+        newRequest,
+      );
 
       if (updateAccount) {
         statusRequest = true;
@@ -310,8 +308,8 @@ export class UserService {
    * @param updateDto: UpdateUserDto
    * @return boolean
    */
-  async updateAccount(role: UserRoles, updateDto: UpdateUserDto): Promise<boolean> {
-    const user = await this.getById(updateDto.id);
+  async updateAccount(id: string, role: UserRoles, updateDto: UpdateUserDto): Promise<boolean> {
+    const user = await this.getById(id);
 
     if (role === UserRoles.ADMIN && user.role === UserRoles.STAFF) {
       await this.repo.updateUser(user, updateDto);
