@@ -55,8 +55,13 @@ export class UserService {
     // Hash the password
     const password = registerDto.password;
     const hashPassword = await bcrypt.hash(password, saltOrRounds);
+    const newUser = await this.repo.registerUser(registerDto, hashPassword);
 
-    return await this.repo.registerUser(registerDto, hashPassword);
+    if (newUser) {
+      await this.mailService.sendWelcomeMail(newUser.email, newUser.username);
+    }
+
+    return newUser;
   }
 
   /**

@@ -30,4 +30,15 @@ export class MailService {
       },
     });
   }
+
+  async sendWelcomeMail(email: string, account: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: MailSubject.CREATE_ACCOUNT,
+      template: MailTemplates.WELCOME,
+      context: {
+        account: account,
+      },
+    });
+  }
 }
