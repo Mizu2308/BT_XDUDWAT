@@ -19,9 +19,14 @@ export class AuthenticationService {
   async login(loginDto: LoginDto) {
     // Check username and pass exist
     const userExist = await this.userService.getUserByField('username', loginDto.username);
+
+    if (!userExist) {
+      throw new BadRequestException('Wrong username or password');
+    }
+
     const isMatch = await bcrypt.compare(loginDto.password, userExist.password);
 
-    if (!userExist || !isMatch) {
+    if (!isMatch) {
       throw new BadRequestException('Wrong username or password');
     }
 

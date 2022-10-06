@@ -8,3 +8,8 @@ export enum UserStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
 }
+
+export enum UserStage {
+  APPROVED = 'APPROVED',
+  PENDING = 'PENDING',
+}

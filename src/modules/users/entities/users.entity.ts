@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
 } from 'typeorm';
-import {UserRoles, UserStatus} from '../users.enum';
+import {UserRoles, UserStage, UserStatus} from '../users.enum';
 
 export const UserEntityName = 'users';
 
@@ -44,10 +44,10 @@ export class UserEntity extends BaseEntity {
   @Column({name: 'number_question_of_survey', nullable: true})
   questionSurvey: number;
 
-  @Column({name: 'password', nullable: false})
+  @Column({name: 'password', nullable: true})
   password: string;
 
-  @Column({name: 'confirm_password', nullable: false})
+  @Column({name: 'confirm_password', nullable: true})
   confirmPassword: string;
 
   @Column({name: 'email', nullable: false, unique: true})
@@ -64,6 +64,9 @@ export class UserEntity extends BaseEntity {
 
   @Column({name: 'status', type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE})
   status: UserStatus;
+
+  @Column({name: 'stage', type: 'enum', enum: UserStage, nullable: true})
+  stage: UserStage;
 
   @CreateDateColumn({name: 'created_at'})
   createdAt: Date;

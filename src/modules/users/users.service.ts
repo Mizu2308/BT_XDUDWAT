@@ -15,12 +15,12 @@ import {UserMessage} from './message/user.message';
 import {ChangePasswordDto} from './dto/change-password.dto';
 import {generatePassword} from 'src/common/helper/common-gen-password';
 import {MailService} from '../mail/mail.service';
-import {UserRoles, UserStatus} from './users.enum';
+import {UserRoles, UserStage, UserStatus} from './users.enum';
 import {ForbiddenException} from '@nestjs/common/exceptions';
 import {UpdateUserDto} from './dto/update.user.dto';
 import {CreateUserDto} from './dto/create.user.dto';
 import {RequestService} from '../request/requests.service';
-import {getConnection} from 'typeorm';
+import {DeleteResult, getConnection} from 'typeorm';
 import {UserInfo} from 'src/common/dto/reqUserInfo.Dto';
 import {RequestMethod, RequestStatus} from '../request/requests.enum';
 import {DeleteUserDto} from './dto/delete.user.dto';
@@ -83,19 +83,24 @@ export class UserService {
     const password = generatePassword();
     const hashPassword = await bcrypt.hash(password, saltOrRounds);
 
-    await this.mailService.sendCreateMail(createDto.email, createDto.username, password);
-
     if (role === UserRoles.ADMIN) {
-      return await this.repo.createUser(createDto, hashPassword, UserRoles.STAFF);
+      const newUser = await this.repo.createUser(createDto, hashPassword, UserRoles.STAFF);
+      if (newUser) {
+        await this.mailService.sendCreateMail(createDto.email, createDto.username, password);
+      }
+      return newUser;
     } else if (role === UserRoles.STAFF) {
-      return await this.repo.createUser(createDto, hashPassword, UserRoles.USER);
+      const newUser = await this.repo.createUser(createDto, hashPassword, UserRoles.USER);
+      if (newUser) {
+        await this.mailService.sendCreateMail(createDto.email, createDto.username, password);
+      }
+      return newUser;
     } else {
       throw new ForbiddenException('You have no rights to access !!!');
     }
   }
 
-  // Make create or update Request
-  async createAccountRequest(createDto: CreateUserDto, userInfo: UserInfo) {
+  async createAccountRequest(createDto: CreateUserDto) {
     const username = await this.repo.getUserByField('username', createDto.username);
     const email = await this.repo.getUserByField('email', createDto.email);
     if (username) {
@@ -104,96 +109,37 @@ export class UserService {
     if (email) {
       throw new ConflictException('Email already exist');
     }
-    // const body = `{"id" : "${createDto.id || null}","username" : "${createDto.username
-    //   }","email" : "${createDto.email}","phone" : "${createDto.phone || null}","address" : "${createDto.address || null
-    //   }","firstName" : "${createDto.firstName || null}", "lastName" : "${createDto.lastName || null
-    //   }","identity" : ${createDto.identity || 0},"description" : "${createDto.description || null
-    //   }","surveyPrice" : ${createDto.surveyPrice || 0},"numberSurvey" : ${createDto.numberSurvey || 0
-    //   },"questionSurvey" : ${createDto.questionSurvey || 0}}`;
-    const body = JSON.stringify(createDto);
-    if (createDto.id) {
-      const user = await this.getById(createDto.id);
-      if (user) {
-        return await this.requestService.createRequest(
-          userInfo.userId,
-          body,
-          userInfo.role,
-          RequestMethod.PUT,
-        );
-      }
-    } else {
-      return await this.requestService.createRequest(
-        userInfo.userId,
-        body,
-        userInfo.role,
-        RequestMethod.POST,
-      );
-    }
+
+    return await this.repo.saveUser(
+      createDto,
+      UserRoles.USER,
+      UserStatus.INACTIVE,
+      UserStage.PENDING,
+    );
   }
 
   // Make delete Account Request
-  async deleteAccountRequest(deleteDto: DeleteUserDto, userInfo: UserInfo) {
-    const user = await this.getById(deleteDto.id);
+  async deleteAccountRequest(id: string): Promise<DeleteResult> {
+    await this.getById(id);
 
-    if (user) {
-      const body = `{"id" : "${deleteDto.id}"}`;
-      return await this.requestService.createRequest(
-        userInfo.userId,
-        body,
-        userInfo.role,
-        RequestMethod.DELETE,
-      );
-    }
+    return this.repo.deleteUser(id);
   }
 
   // Confirm Pending requests
-  async acceptRequest(requestId: string): Promise<boolean> {
-    const request = await this.requestService.getById(requestId);
-    const newRequest = JSON.parse(request.body);
+  async acceptRequest(id: string): Promise<UserEntity> {
+    const user = await this.getById(id);
 
-    // Check username and email exists
-    const username = await this.repo.getUserByField('username', newRequest.username);
-    const email = await this.repo.getUserByField('email', newRequest.email);
-    if (username) {
-      throw new ConflictException('Username already exist');
-    }
-    if (email) {
-      throw new ConflictException('Email already exist');
-    }
+    const saltOrRounds = 10;
+    const password = generatePassword();
+    const hashPassword = await bcrypt.hash(password, saltOrRounds);
 
-    let statusRequest = false;
-    // Check method of the request
-    if (newRequest.id && request.method === RequestMethod.PUT) {
-      // update Account
-      const updateAccount = await this.updateAccount(
-        newRequest.id,
-        request.creatorRole,
-        newRequest,
-      );
+    await this.mailService.sendCreateMail(user.email, user.username, password);
 
-      if (updateAccount) {
-        statusRequest = true;
-      }
-    } else if (newRequest.id && request.method === RequestMethod.DELETE) {
-      // Delete Account
-      const deleteAccount = this.deleteAccount(newRequest.id, request.creatorRole);
-
-      if (deleteAccount) {
-        statusRequest = true;
-      }
-    } else {
-      // Create a new Account
-      const newAccount = await this.createAccount(newRequest, request.creatorRole);
-
-      if (newAccount) {
-        statusRequest = true;
-      }
-    }
-
-    if (statusRequest) {
-      await this.requestService.updateRequestStatus(requestId, RequestStatus.APPROVED);
-      return statusRequest;
-    }
+    user.status = UserStatus.ACTIVE;
+    user.password = hashPassword;
+    user.confirmPassword = hashPassword;
+    user.stage = UserStage.APPROVED;
+    return user.save();
   }
 
   /**
@@ -206,6 +152,10 @@ export class UserService {
     role: UserRoles,
   ): Promise<ResponsePagination<UserEntity>> {
     return this.repo.getAllUsers(filterDto, role);
+  }
+
+  async getPendingUsers(filterDto: FindAllUsersDto): Promise<ResponsePagination<UserEntity>> {
+    return this.repo.getPendingUsers(filterDto);
   }
 
   async getById(id: string): Promise<UserEntity> {

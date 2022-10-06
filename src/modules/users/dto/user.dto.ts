@@ -10,6 +10,7 @@ import {
   IsPhoneNumber,
   IsString,
   Length,
+  Matches,
 } from 'class-validator';
 
 export class UserBaseDto implements IUserBase {
@@ -38,6 +39,9 @@ export class UserBaseDto implements IUserBase {
   @Allow()
   @IsString()
   @Length(8, 16)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/, {
+    message: 'Password too weak',
+  })
   password: string;
 
   @ApiProperty({

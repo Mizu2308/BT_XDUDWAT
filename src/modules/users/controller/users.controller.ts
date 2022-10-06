@@ -26,7 +26,9 @@ import {UpdateResDto, UpdateUserDto} from '../dto/update.user.dto';
 import {RegisterUserDto} from '../dto/register.user.dto';
 import {CreateUserDto} from '../dto/create.user.dto';
 import {UuidReqDTO} from 'src/common/dto/uuid-req.dto';
-import {UserStatus} from '../users.enum';
+import {UserRoles, UserStatus} from '../users.enum';
+import {Roles} from 'src/common/decorators/roles.decorator';
+import {DeleteResult} from 'typeorm';
 
 @Controller('/users')
 @ApiTags('users')
@@ -69,12 +71,12 @@ export class UserController {
     summary: 'create_request',
   })
   @ApiCreatedResponse({description: 'OK'})
-  @ApiBody({type: RegisterUserDto})
-  async createAccountRequest(@Body(ValidationPipe) createDto: CreateUserDto, @Req() req) {
-    return this.userService.createAccountRequest(createDto, req.user);
+  @ApiBody({type: CreateUserDto})
+  async createAccountRequest(@Body(ValidationPipe) createDto: CreateUserDto) {
+    return this.userService.createAccountRequest(createDto);
   }
 
-  @Post('/delete_request')
+  @Delete('/delete_request/:id')
   @ApiOperation({
     operationId: 'delete_request',
     description: `
@@ -86,9 +88,8 @@ export class UserController {
     summary: 'delete_request',
   })
   @ApiCreatedResponse({description: 'OK'})
-  @ApiBody({type: RegisterUserDto})
-  async deleteAccountRequest(@Body(ValidationPipe) deleteDto: DeleteUserDto, @Req() req) {
-    return this.userService.deleteAccountRequest(deleteDto, req.user);
+  async deleteAccountRequest(@Param(ValidationPipe) {id}: UuidReqDTO): Promise<DeleteResult> {
+    return this.userService.deleteAccountRequest(id);
   }
 
   @Post('/response/:id')
@@ -140,6 +141,22 @@ export class UserController {
     @Req() req: {user: UserInfo},
   ): Promise<ResponsePagination<UserEntity>> {
     return this.userService.getAll(filterDto, req.user.role);
+  }
+
+  @Get('/create_account')
+  @Roles(UserRoles.ADMIN)
+  @ApiOperation({
+    operationId: 'get-all-users',
+    description: `
+      GET /
+    `,
+    summary: 'Get all Users',
+  })
+  @ApiOkResponse({description: 'OK', type: FindAllUsersResDto})
+  async getPendingUsers(
+    @Query() filterDto: FindAllUsersDto,
+  ): Promise<ResponsePagination<UserEntity>> {
+    return this.userService.getPendingUsers(filterDto);
   }
 
   @Get('/other/:id')

@@ -7,7 +7,7 @@ import {UserEntity, UserEntityName} from './entities/users.entity';
 import {Not, IsNull, Repository, DeleteResult, EntityRepository} from 'typeorm';
 import {CommonPagination} from 'src/common/helper/common-pagination';
 import {ResponsePagination} from 'src/common/dto/pagination-response.dto';
-import {UserRoles, UserStatus} from './users.enum';
+import {UserRoles, UserStage, UserStatus} from './users.enum';
 import {CreateUserDto} from './dto/create.user.dto';
 
 @EntityRepository(UserEntity)
@@ -66,6 +66,35 @@ export class UserRepository extends Repository<UserEntity> {
   }
 
   /**
+   * Create user
+   * @param createDto
+   * @returns
+   */
+  async saveUser(
+    createDto: CreateUserDto,
+    role: UserRoles,
+    status: UserStatus,
+    stage: UserStage,
+  ): Promise<UserEntity> {
+    const user = new UserEntity();
+
+    user.username = createDto.username;
+    user.email = createDto.email;
+    user.firstName = createDto.firstName;
+    user.lastName = createDto.lastName;
+    user.identity = createDto.identity;
+    user.description = createDto.description;
+    user.surveyPrice = createDto.surveyPrice;
+    user.numberSurvey = createDto.numberSurvey;
+    user.questionSurvey = createDto.questionSurvey;
+    user.role = role;
+    user.status = status;
+    user.stage = stage;
+
+    return user.save();
+  }
+
+  /**
    * Get all user
    * @param filterDto
    * @returns
@@ -90,6 +119,17 @@ export class UserRepository extends Repository<UserEntity> {
       query.orWhere(`(${UserEntityName}.role = '${UserRoles.USER}')`);
     }
 
+    query.andWhere(`(${UserEntityName}.stage = '${UserStage.APPROVED}')`);
+    query.orderBy(`${UserEntityName}.createdAt`, 'DESC');
+
+    return CommonPagination(filterDto, query);
+  }
+
+  async getPendingUsers(filterDto: FindAllUsersDto): Promise<ResponsePagination<UserEntity>> {
+    const query = this.repo.createQueryBuilder(UserEntityName);
+
+    query.andWhere(`(${UserEntityName}.stage = '${UserStage.PENDING}')`);
+    query.andWhere(`(${UserEntityName}.role = '${UserRoles.USER}')`);
     query.orderBy(`${UserEntityName}.createdAt`, 'DESC');
 
     return CommonPagination(filterDto, query);
@@ -184,5 +224,9 @@ export class UserRepository extends Repository<UserEntity> {
         password: passport,
       },
     });
+  }
+
+  async deleteUser(id: string): Promise<DeleteResult> {
+    return this.repo.delete(id);
   }
 }
