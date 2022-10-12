@@ -10,9 +10,6 @@ import {
 } from 'typeorm';
 import {UserRoles} from 'src/modules/users/users.enum';
 import {RequestMethod, RequestStatus} from '../requests.enum';
-import {IRegisterUser} from 'src/modules/users/interfaces/register.user.interface';
-import {ICreateUser} from 'src/modules/users/interfaces/create.user.interface';
-import {IUserBase} from 'src/modules/users/interfaces/user.interface';
 import {UserEntity} from 'src/modules/users/entities/users.entity';
 
 export const RequestEntityName = 'requests';

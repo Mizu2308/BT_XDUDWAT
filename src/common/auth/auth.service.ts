@@ -1,4 +1,4 @@
-import {Inject, Injectable, forwardRef} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {UserService} from 'src/modules/users/users.service';
 import {genTokenIdentifier} from '../helper/common-gen-password';

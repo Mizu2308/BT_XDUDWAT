@@ -20,10 +20,7 @@ import {ForbiddenException} from '@nestjs/common/exceptions';
 import {UpdateUserDto} from './dto/update.user.dto';
 import {CreateUserDto} from './dto/create.user.dto';
 import {RequestService} from '../request/requests.service';
-import {DeleteResult, getConnection} from 'typeorm';
-import {UserInfo} from 'src/common/dto/reqUserInfo.Dto';
-import {RequestMethod, RequestStatus} from '../request/requests.enum';
-import {DeleteUserDto} from './dto/delete.user.dto';
+import {DeleteResult} from 'typeorm';
 
 @Injectable()
 export class UserService {

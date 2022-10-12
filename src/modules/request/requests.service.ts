@@ -1,11 +1,5 @@
-import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {ResponsePagination} from 'src/common/dto/pagination-response.dto';
-import {EntityManager, TransactionManager} from 'typeorm';
 import {UserRoles} from '../users/users.enum';
 import {FindAllRequestDto} from './dto/list.requests.dto';
 import {RequestBaseDto} from './dto/requests.dto';

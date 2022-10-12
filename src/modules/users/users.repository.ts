@@ -1,5 +1,4 @@
 import {InjectRepository} from '@nestjs/typeorm';
-import {UserIdDTO} from './dto/get-by-id.user.dto';
 import {RegisterUserDto} from './dto/register.user.dto';
 import {UpdateUserDto} from './dto/update.user.dto';
 import {FindAllUsersDto} from './dto/list.users.dto';

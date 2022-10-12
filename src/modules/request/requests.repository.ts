@@ -1,15 +1,7 @@
 import {InjectRepository} from '@nestjs/typeorm';
 import {ResponsePagination} from 'src/common/dto/pagination-response.dto';
 import {CommonPagination} from 'src/common/helper/common-pagination';
-import {
-  Not,
-  IsNull,
-  Repository,
-  DeleteResult,
-  EntityRepository,
-  TransactionManager,
-  EntityManager,
-} from 'typeorm';
+import {Repository, DeleteResult, EntityRepository} from 'typeorm';
 import {UserRoles} from '../users/users.enum';
 import {FindAllRequestDto} from './dto/list.requests.dto';
 import {RequestBaseDto} from './dto/requests.dto';

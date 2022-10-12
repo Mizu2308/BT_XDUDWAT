@@ -20,13 +20,13 @@ import {UserInfo} from 'src/common/dto/reqUserInfo.Dto';
 import {Delete, Param, Put} from '@nestjs/common/decorators';
 import {ChangeStatusResDto} from '../dto/change-status.dto';
 import {UserIdDTO} from '../dto/get-by-id.user.dto';
-import {DeleteResDto, DeleteUserDto} from '../dto/delete.user.dto';
+import {DeleteResDto} from '../dto/delete.user.dto';
 import {UserBaseDto} from '../dto/user.dto';
 import {UpdateResDto, UpdateUserDto} from '../dto/update.user.dto';
 import {RegisterUserDto} from '../dto/register.user.dto';
 import {CreateUserDto} from '../dto/create.user.dto';
 import {UuidReqDTO} from 'src/common/dto/uuid-req.dto';
-import {UserRoles, UserStatus} from '../users.enum';
+import {UserRoles} from '../users.enum';
 import {Roles} from 'src/common/decorators/roles.decorator';
 import {DeleteResult} from 'typeorm';
 
