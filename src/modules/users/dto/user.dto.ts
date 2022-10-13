@@ -34,7 +34,7 @@ export class UserBaseDto implements IUserBase {
   @ApiProperty({
     description: 'Password',
     type: String,
-    example: '123456',
+    example: 'Abc@123456',
   })
   @Allow()
   @IsString()
